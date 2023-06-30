@@ -1,7 +1,56 @@
-from collections import deque
 import networkx as nx
 import matplotlib.pyplot as plt
-import heapq
+
+
+class PriorityQueue:
+    def __init__(self):
+        self.queue = []
+
+    def insert(self, item, priority):
+        self.queue.append((item, priority))
+        self.queue.sort(key=lambda x: x[1])
+
+    def extract_min(self):
+        if self.is_empty():
+            return None
+        return self.queue.pop(0)
+
+    def is_empty(self):
+        return len(self.queue) == 0
+
+
+class Queue:
+    def __init__(self):
+        self.queue = []
+
+    def enqueue(self, item):
+        self.queue.append(item)
+
+    def dequeue(self):
+        if self.is_empty():
+            return None
+        return self.queue.pop(0)
+
+    def is_empty(self):
+        return len(self.queue) == 0
+
+
+class Stack:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, item):
+        self.stack.append(item)
+
+    def pop(self):
+        if self.is_empty():
+            return None
+        return self.stack.pop()
+
+    def is_empty(self):
+        return len(self.stack) == 0
+
+
 
 def init_base_graph():
     num_nodes = int(input("\nEnter the total number of nodes for the input graph: "))
@@ -49,23 +98,25 @@ def print_adjacency_list(graph, node):
 
 def breadthFirstSearch(graph, startnode, endnode):
     visited = set()
-    queue = deque([(startnode, [])])
-    while queue:
-        node, path = queue.popleft()
+    queue = Queue()
+    queue.enqueue((startnode, []))
+    while not queue.is_empty():
+        node, path = queue.dequeue()
         if node == endnode:
             print("\nOrder of traversal from {} to {}: {}".format(startnode, endnode, " -> ".join(path + [node])))
             return
         if node not in visited:
             visited.add(node)
             for adjacent_node, _ in graph[node]:
-                queue.append((adjacent_node, path + [node]))
+                queue.enqueue((adjacent_node, path + [node]))
     print("\nPath from {} to {} is not reachable.".format(startnode, endnode))
 
 
 def depthFirstSearch(graph, startnode, endnode):
     visited = set()
-    stack = [(startnode, [])]
-    while stack:
+    stack = Stack()
+    stack.push((startnode, []))
+    while not stack.is_empty():
         node, path = stack.pop()
         if node == endnode:
             print("\nOrder of traversal from {} to {}: {}".format(startnode, endnode, " -> ".join(path + [node])))
@@ -73,16 +124,16 @@ def depthFirstSearch(graph, startnode, endnode):
         if node not in visited:
             visited.add(node)
             for adjacent_node, _ in graph[node]:
-                stack.append((adjacent_node, path + [node]))
+                stack.push((adjacent_node, path + [node]))
     print("\nPath from {} to {} is not reachable.".format(startnode, endnode))
 
 
 def uniformCostSearch(graph, startnode, endnode):
     visited = set()
-    queue = [(0, startnode, [])]  # Priority queue elements: (cost, node, path)
-    heapq.heapify(queue)
-    while queue:
-        cost, node, path = heapq.heappop(queue)
+    queue = PriorityQueue()
+    queue.insert((0, startnode, []), 0)  # Priority queue elements: (cost, node, path)
+    while not queue.is_empty():
+        (cost, node, path), _ = queue.extract_min()
         if node == endnode:
             print("\nOrder of traversal from {} to {}: {}".format(startnode, endnode, " -> ".join(path + [node])))
             print("Minimum cost from {} to {} is: {}".format(startnode, endnode, cost))
@@ -91,8 +142,21 @@ def uniformCostSearch(graph, startnode, endnode):
             visited.add(node)
             for adjacent_node, edge_cost in graph[node]:
                 new_cost = cost + edge_cost
-                heapq.heappush(queue, (new_cost, adjacent_node, path + [node]))
+                queue.insert((new_cost, adjacent_node, path + [node]), new_cost)
     print("\nPath from {} to {} is not reachable.".format(startnode, endnode))
+
+
+def delete_node(graph, node):
+    if node in graph:
+        del graph[node]
+        for adjacent_node in graph:
+            graph[adjacent_node] = {(n, c) for n, c in graph[adjacent_node] if n != node}
+
+
+def delete_edge(graph, source, destination):
+    if source in graph and destination in graph:
+        graph[source] = {(n, c) for n, c in graph[source] if n != destination}
+        graph[destination] = {(n, c) for n, c in graph[destination] if n != source}
 
 
 def main():
@@ -106,12 +170,14 @@ def main():
         print("1. Initialise Base Graph")
         print("2. Add Extra Node")
         print("3. Add Extra Edges")
-        print("4. Print the whole graph visually")
-        print("5. Print the Adjacency of a particular node")
-        print("6. Breadth First Search")
-        print("7. Depth First Search")
-        print("8. Uniform Cost Search")
-        print("9. Exit")
+        print("4. Delete Node")
+        print("5. Delete Edge")
+        print("6. Print the whole graph visually")
+        print("7. Print the Adjacency of a particular node")
+        print("8. Breadth First Search")
+        print("9. Depth First Search")
+        print("10. Uniform Cost Search")
+        print("11. Exit")
         print("--------------------------------")
         option = int(input("\nEnter your choice: "))
 
@@ -130,28 +196,38 @@ def main():
             print("Edge ({}, {}) added successfully.".format(source, destination))
 
         elif option == 4:
-            print_graph_visually(graph)
+            node = input("\nEnter the node to delete: ")
+            delete_node(graph, node)
+            print("Node {} deleted successfully.".format(node))
 
         elif option == 5:
+            source, destination = input("\nEnter the source and destination of the edge to delete: ").split()
+            delete_edge(graph, source, destination)
+            print("Edge ({}, {}) deleted successfully.".format(source, destination))
+
+        elif option == 6:
+            print_graph_visually(graph)
+
+        elif option == 7:
             node = input("\nEnter the node to print the adjacency nodes: ")
             print_adjacency_list(graph, node)
 
-        elif option == 6:
-            start_node = input("\nEnter the start node for the BFS: ")
-            target_node = input("\nEnter the target node for the BFS: ")
+        elif option == 8:
+            start_node = input("\nEnter the start node for BFS: ")
+            target_node = input("\nEnter the target node for BFS: ")
             breadthFirstSearch(graph, start_node, target_node)
 
-        elif option == 7:
-            start_node = input("\nEnter the start node for the DFS: ")
-            target_node = input("\nEnter the target node for the DFS: ")
+        elif option == 9:
+            start_node = input("\nEnter the start node for DFS: ")
+            target_node = input("\nEnter the target node for DFS: ")
             depthFirstSearch(graph, start_node, target_node)
 
-        elif option == 8:
-            start_node = input("\nEnter the start node for the Uniform Cost Search: ")
-            target_node = input("\nEnter the target node for the Uniform Cost Search: ")
+        elif option == 10:
+            start_node = input("\nEnter the start node for Uniform Cost Search: ")
+            target_node = input("\nEnter the target node for Uniform Cost Search: ")
             uniformCostSearch(graph, start_node, target_node)
 
-        elif option == 9:
+        elif option == 11:
             print("Thank you for using the program.")
             exit(0)
 
