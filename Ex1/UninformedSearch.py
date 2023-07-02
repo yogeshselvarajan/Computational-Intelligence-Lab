@@ -3,82 +3,75 @@ from StackImplementation import Stack
 from PriorityQueueImplementation import PriorityQueue
 from GraphImplementation import Graph
 
-
 def BFS(graph, start_node, goal_node):
-    if start_node not in graph or goal_node not in graph:
-        raise Exception("Start node or goal node is not in the graph")
+    if start_node not in graph.graph or goal_node not in graph.graph:
+        return None
 
-    fringe = Queue()
+    queue = Queue()
+    queue.enqueue([(start_node, 0)])
     explored_set = set()
 
-    fringe.enqueue(start_node)
-    explored_set.add(start_node)
-
-    path = []
-
-    while not fringe.is_empty():
-        node = fringe.dequeue()
-        path.append(node)
+    while not queue.is_empty():
+        path = queue.dequeue()
+        node, cost = path[-1]
 
         if node == goal_node:
-            return path
+            return [node for node, _ in path], cost
 
-        for neighbor in graph.get_adjacency_list(node):
+        explored_set.add(node)
+
+        for neighbor, edge_cost in graph.graph[node]:
             if neighbor not in explored_set:
-                fringe.enqueue(neighbor)
-                explored_set.add(neighbor)
+                new_path = path + [(neighbor, cost + edge_cost)]
+                queue.enqueue(new_path)
 
     return None
-
 
 def DFS(graph, start_node, goal_node):
-    if start_node not in graph or goal_node not in graph:
-        raise Exception("Start node or goal node is not in the graph")
+    if start_node not in graph.graph or goal_node not in graph.graph:
+        return None
 
-    fringe = Stack()
+    stack = Stack()
+    stack.push([(start_node, 0)])
     explored_set = set()
 
-    fringe.push(start_node)
-    explored_set.add(start_node)
-
-    path = []
-
-    while not fringe.is_empty():
-        node = fringe.pop()
-        path.append(node)
+    while not stack.is_empty():
+        path = stack.pop()
+        node, cost = path[-1]
 
         if node == goal_node:
-            return path
+            return [node for node, _ in path], cost
 
-        for neighbor in graph.get_adjacency_list(node):
+        explored_set.add(node)
+
+        for neighbor, edge_cost in graph.graph[node]:
             if neighbor not in explored_set:
-                fringe.push(neighbor)
-                explored_set.add(neighbor)
+                new_path = path + [(neighbor, cost + edge_cost)]
+                stack.push(new_path)
 
     return None
 
-
 def UCS(graph, start_node, goal_node):
-    if start_node not in graph or goal_node not in graph:
-        raise Exception("Start node or goal node is not in the graph")
+    if start_node not in graph.graph or goal_node not in graph.graph:
+        return None
 
-    fringe = PriorityQueue()
+    priority_queue = PriorityQueue()
+    priority_queue.push([(start_node, 0)], 0)
     explored_set = set()
 
-    # Each item in the fringe will be a tuple: (node, path_cost)
-    fringe.enqueue((start_node, 0))
-    explored_set.add(start_node)
-
-    while not fringe.is_empty():
-        node, path_cost = fringe.dequeue()
+    while not priority_queue.is_empty():
+        path = priority_queue.pop()
+        node, cost = path[-1]
 
         if node == goal_node:
-            return path_cost
+            return [node for node, _ in path], cost
 
-        for neighbor, cost in graph.get_adjacency_list(node):
+        explored_set.add(node)
+
+        for neighbor, edge_cost in graph.graph[node]:
             if neighbor not in explored_set:
-                fringe.enqueue((neighbor, path_cost + cost))
-                explored_set.add(neighbor)
+                new_path = path + [(neighbor, cost + edge_cost)]
+                priority_queue.push(new_path, cost + edge_cost)
 
     return None
 
@@ -91,83 +84,108 @@ def main():
         print("--------------------------------")
         print("\t MAIN MENU")
         print("--------------------------------")
-        print("1. Initialize Base Graph")
-        print("2. Add Extra Node")
-        print("3. Add Extra Edges")
-        print("4. Delete Node")
-        print("5. Delete Edge")
-        print("6. Print the Whole Graph Visually")
-        print("7. Print the Adjacency of a Particular Node")
-        print("8. Breadth First Search")
-        print("9. Depth First Search")
-        print("10. Uniform Cost Search")
-        print("11. Exit")
+        print("1. Initialize Graph as Map of TN")
+        print("2. Initialize Custom Graph")
+        print("3. Add Extra Node")
+        print("4. Add Extra Edges")
+        print("5. Delete Node")
+        print("6. Delete Edge")
+        print("7. Print the Whole Graph Visually")
+        print("8. Print the Adjacency of a Particular Node")
+        print("9. Breadth First Search")
+        print("10. Depth First Search")
+        print("11. Uniform Cost Search")
+        print("12. Exit")
         print("--------------------------------")
 
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            graph.init_base_graph()
+            graph.create_tamil_nadu_graph()
+            print("Base Graph (Map of TN) initialized successfully!")
 
         elif choice == "2":
-            node_value = input("Enter the input value to store in the new node: ")
-            graph.graph[node_value] = set()
-            print("Node added successfully!")
+            num_nodes = int(input("Enter the number of nodes: "))
+            for _ in range(num_nodes):
+                node_value = input("Enter the input value to store in the new node: ")
+                graph.graph[node_value] = set()
+                print("Node with value {} added successfully!".format(node_value))
+
+            num_edges = int(input("Enter the number of edges: "))
+            for _ in range(num_edges):
+                source = input("Enter the source node: ")
+                destination = input("Enter the destination node: ")
+                cost = int(input("Enter the cost of the edge (enter 0 if not applicable): "))
+                graph.graph[source].add((destination, cost))
+                graph.graph[destination].add((source, cost))
+                print("Edge between {} and {} added successfully!".format(source, destination))
+            print("Custom Graph initialized successfully!")
 
         elif choice == "3":
+            node_value = input("Enter the input value to store in the new node: ")
+            graph.graph[node_value] = set()
+            print("Node with value {} added successfully!".format(node_value))
+
+        elif choice == "4":
             source = input("Enter the source node: ")
             destination = input("Enter the destination node: ")
             cost = int(input("Enter the cost of the edge (enter 0 if not applicable): "))
             graph.graph[source].add((destination, cost))
             graph.graph[destination].add((source, cost))
-            print("Edge added successfully!")
-
-        elif choice == "4":
-            node_value = input("Enter the node value to delete: ")
-            graph.delete_node(node_value)
-            print("Node deleted successfully!")
+            print("Edge between {} and {} added successfully!".format(source, destination))
 
         elif choice == "5":
+            node_value = input("Enter the node value to delete: ")
+            graph.delete_node(node_value)
+            print("Node with value {} deleted successfully!".format(node_value))
+
+        elif choice == "6":
             source = input("Enter the source node: ")
             destination = input("Enter the destination node: ")
             graph.delete_edge(source, destination)
-            print("Edge deleted successfully!")
-
-        elif choice == "6":
-            graph.print_graph_visually()
+            print("Edge between {} and {} deleted successfully!".format(source, destination))
 
         elif choice == "7":
-            node_value = input("Enter the node value to print adjacency: ")
-            graph.print_adjacency_list(node_value)
+            graph.print_graph_visually()
 
         elif choice == "8":
-            start_node = input("Enter the start node: ")
-            goal_node = input("Enter the goal node: ")
-            path = BFS(graph, start_node, goal_node)
-            if path:
-                print("Breadth First Search Path:", path)
-            else:
-                print("No path found.")
+            node_value = input("Enter the node value to print adjacency: ")
+            graph.print_adjacency_list(node_value)
 
         elif choice == "9":
             start_node = input("Enter the start node: ")
             goal_node = input("Enter the goal node: ")
-            path = DFS(graph, start_node, goal_node)
-            if path:
-                print("Depth First Search Path:", path)
+            result = BFS(graph, start_node, goal_node)
+            if result:
+                path, cost = result
+                print("Breadth First Search Path:", path)
+                print("Breadth First Search Cost:", cost)
             else:
-                print("No path found.")
+                print("Goal node cannot be reached from the start node.")
 
         elif choice == "10":
             start_node = input("Enter the start node: ")
             goal_node = input("Enter the goal node: ")
-            cost = UCS(graph, start_node, goal_node)
-            if cost is not None:
-                print("Uniform Cost Search Cost:", cost)
+            result = DFS(graph, start_node, goal_node)
+            if result:
+                path, cost = result
+                print("Depth First Search Path:", path)
+                print("Depth First Search Cost:", cost)
             else:
-                print("No path found.")
+                print("Goal node cannot be reached from the start node.")
 
         elif choice == "11":
+            start_node = input("Enter the start node: ")
+            goal_node = input("Enter the goal node: ")
+            result = UCS(graph, start_node, goal_node)
+            if result:
+                cost, path = result
+                print("Uniform Cost Search Cost:", cost)
+                print("Uniform Cost Search Path:", path)
+            else:
+                print("Goal node cannot be reached from the start node.")
+
+        elif choice == "12":
             print("Exiting the program...")
             break
 

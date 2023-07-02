@@ -19,7 +19,12 @@ class Graph:
         num_edges = int(input("\n\nEnter the total number of edges for the input graph: "))
         for i in range(num_edges):
             while True:
-                source, destination, cost = input("\nEnter the source, destination, and cost of edge {}: ".format(i + 1)).split()
+                edge_input = input("\nEnter the source, destination, and cost of edge {} (separated by space): ".format(i + 1))
+                edge_parts = edge_input.split()
+                if len(edge_parts) != 3:
+                    print("Invalid input. Please provide source, destination, and cost separated by space.")
+                    continue
+                source, destination, cost = edge_parts
                 if source in self.graph and destination in self.graph:
                     try:
                         cost = int(cost)
@@ -30,6 +35,7 @@ class Graph:
                         print("Cost should be a numeric value. Please enter a valid cost.")
                 else:
                     print("Source or destination node does not exist in the graph. Please enter valid nodes.")
+
 
     def print_graph(self):
         print("The whole graph is:")
@@ -65,11 +71,26 @@ class Graph:
         else:
             print("Source or destination node does not exist in the graph. Please enter valid nodes.")
 
-    def delete_node(self, node):
-        if node in self.graph:
-            for adjacent_node, _ in self.graph[node]:
-                self.graph[adjacent_node] = {(n, cost) for n, cost in self.graph[adjacent_node] if n != node}
-            del self.graph[node]
-            print("Node {} and its corresponding edges deleted.".format(node))
-        else:
-            print("Node does not exist in the graph.")
+    def delete_node(self, node_value):
+        if node_value in self.graph:
+            del self.graph[node_value]
+            for node in self.graph:
+                self.graph[node] = {(n, c) for n, c in self.graph[node] if n != node_value}
+    
+    def create_tamil_nadu_graph(self):
+        self.graph = {
+            'Chennai': [('Kanchipuram', 76), ('Vellore', 139), ('Pondicherry', 151), ('Tiruvallur', 46)],
+            'Kanchipuram': [('Vellore', 60), ('Tiruvallur', 70)],
+            'Pondicherry': [('Chennai', 151), ('Tiruvannamalai', 108)],
+            'Tiruvallur': [('Chennai', 46), ('Kanchipuram', 70), ('Vellore', 178), ('Chengalpattu', 54)],
+            'Tiruvannamalai': [('Pondicherry', 108), ('Salem', 179), ('Villupuram', 41)],
+            'Salem': [('Vellore', 202), ('Tiruvannamalai', 179), ('Coimbatore', 202)],
+            'Chengalpattu': [('Tiruvallur', 54), ('Tirunelveli', 579)],
+            'Villupuram': [('Tiruvannamalai', 41), ('Thanjavur', 189)],
+            'Coimbatore': [('Salem', 202), ('Erode', 97)],
+            'Tirunelveli': [('Chengalpattu', 579), ('Madurai', 156)],
+            'Thanjavur': [('Villupuram', 189), ('Trichy', 55)],
+            'Erode': [('Coimbatore', 97), ('Salem', 92)],
+            'Madurai': [('Tirunelveli', 156), ('Trichy', 142)],
+            'Trichy': [('Thanjavur', 55), ('Madurai', 142)],
+        }
