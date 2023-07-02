@@ -84,27 +84,22 @@ def main():
         print("--------------------------------")
         print("\t MAIN MENU")
         print("--------------------------------")
-        print("1. Initialize Graph as Map of TN")
-        print("2. Initialize Custom Graph")
-        print("3. Add Extra Node")
-        print("4. Add Extra Edges")
-        print("5. Delete Node")
-        print("6. Delete Edge")
-        print("7. Print the Whole Graph Visually")
-        print("8. Print the Adjacency of a Particular Node")
-        print("9. Breadth First Search")
-        print("10. Depth First Search")
-        print("11. Uniform Cost Search")
-        print("12. Exit")
+        print("1. Initialize Custom Graph")
+        print("2. Add Extra Node")
+        print("3. Add Extra Edges")
+        print("4. Delete Node")
+        print("5. Delete Edge")
+        print("6. Print the Whole Graph Visually")
+        print("7. Print the Adjacency of a Particular Node")
+        print("8. Breadth First Search")
+        print("9. Depth First Search")
+        print("10. Uniform Cost Search")
+        print("11. Exit")
         print("--------------------------------")
 
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            graph.create_tamil_nadu_graph()
-            print("Base Graph (Map of TN) initialized successfully!")
-
-        elif choice == "2":
             num_nodes = int(input("Enter the number of nodes: "))
             for _ in range(num_nodes):
                 node_value = input("Enter the input value to store in the new node: ")
@@ -121,12 +116,12 @@ def main():
                 print("Edge between {} and {} added successfully!".format(source, destination))
             print("Custom Graph initialized successfully!")
 
-        elif choice == "3":
+        elif choice == "2":
             node_value = input("Enter the input value to store in the new node: ")
             graph.graph[node_value] = set()
             print("Node with value {} added successfully!".format(node_value))
 
-        elif choice == "4":
+        elif choice == "3":
             source = input("Enter the source node: ")
             destination = input("Enter the destination node: ")
             cost = int(input("Enter the cost of the edge (enter 0 if not applicable): "))
@@ -134,25 +129,25 @@ def main():
             graph.graph[destination].add((source, cost))
             print("Edge between {} and {} added successfully!".format(source, destination))
 
-        elif choice == "5":
+        elif choice == "4":
             node_value = input("Enter the node value to delete: ")
             graph.delete_node(node_value)
             print("Node with value {} deleted successfully!".format(node_value))
 
-        elif choice == "6":
+        elif choice == "5":
             source = input("Enter the source node: ")
             destination = input("Enter the destination node: ")
             graph.delete_edge(source, destination)
             print("Edge between {} and {} deleted successfully!".format(source, destination))
 
-        elif choice == "7":
+        elif choice == "6":
             graph.print_graph_visually()
 
-        elif choice == "8":
+        elif choice == "7":
             node_value = input("Enter the node value to print adjacency: ")
             graph.print_adjacency_list(node_value)
 
-        elif choice == "9":
+        elif choice == "8":
             start_node = input("Enter the start node: ")
             goal_node = input("Enter the goal node: ")
             result = BFS(graph, start_node, goal_node)
@@ -163,7 +158,7 @@ def main():
             else:
                 print("Goal node cannot be reached from the start node.")
 
-        elif choice == "10":
+        elif choice == "9":
             start_node = input("Enter the start node: ")
             goal_node = input("Enter the goal node: ")
             result = DFS(graph, start_node, goal_node)
@@ -174,7 +169,7 @@ def main():
             else:
                 print("Goal node cannot be reached from the start node.")
 
-        elif choice == "11":
+        elif choice == "10":
             start_node = input("Enter the start node: ")
             goal_node = input("Enter the goal node: ")
             result = UCS(graph, start_node, goal_node)
@@ -185,7 +180,7 @@ def main():
             else:
                 print("Goal node cannot be reached from the start node.")
 
-        elif choice == "12":
+        elif choice == "11":
             print("Exiting the program...")
             break
 

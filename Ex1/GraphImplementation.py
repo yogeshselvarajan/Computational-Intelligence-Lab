@@ -76,21 +76,3 @@ class Graph:
             del self.graph[node_value]
             for node in self.graph:
                 self.graph[node] = {(n, c) for n, c in self.graph[node] if n != node_value}
-    
-    def create_tamil_nadu_graph(self):
-        self.graph = {
-            'Chennai': [('Kanchipuram', 76), ('Vellore', 139), ('Pondicherry', 151), ('Tiruvallur', 46)],
-            'Kanchipuram': [('Vellore', 60), ('Tiruvallur', 70)],
-            'Pondicherry': [('Chennai', 151), ('Tiruvannamalai', 108)],
-            'Tiruvallur': [('Chennai', 46), ('Kanchipuram', 70), ('Vellore', 178), ('Chengalpattu', 54)],
-            'Tiruvannamalai': [('Pondicherry', 108), ('Salem', 179), ('Villupuram', 41)],
-            'Salem': [('Vellore', 202), ('Tiruvannamalai', 179), ('Coimbatore', 202)],
-            'Chengalpattu': [('Tiruvallur', 54), ('Tirunelveli', 579)],
-            'Villupuram': [('Tiruvannamalai', 41), ('Thanjavur', 189)],
-            'Coimbatore': [('Salem', 202), ('Erode', 97)],
-            'Tirunelveli': [('Chengalpattu', 579), ('Madurai', 156)],
-            'Thanjavur': [('Villupuram', 189), ('Trichy', 55)],
-            'Erode': [('Coimbatore', 97), ('Salem', 92)],
-            'Madurai': [('Tirunelveli', 156), ('Trichy', 142)],
-            'Trichy': [('Thanjavur', 55), ('Madurai', 142)],
-        }
