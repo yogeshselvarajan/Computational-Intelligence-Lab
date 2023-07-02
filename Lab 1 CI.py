@@ -51,7 +51,6 @@ class Stack:
         return len(self.stack) == 0
 
 
-
 def init_base_graph():
     num_nodes = int(input("\nEnter the total number of nodes for the input graph: "))
     graph = {}
@@ -150,7 +149,7 @@ def delete_node(graph, node):
     if node in graph:
         del graph[node]
         for adjacent_node in graph:
-            graph[adjacent_node] = {(n, c) for n, c in graph[adjacent_node] if n != node}
+            delete_edge(graph, adjacent_node, node)
 
 
 def delete_edge(graph, source, destination):
