@@ -7,12 +7,12 @@ def BFS(graph, start_node, goal_node):
     if start_node not in graph.graph or goal_node not in graph.graph:
         return None
 
-    queue = Queue()
-    queue.enqueue([(start_node, 0)])
+    fringe = Queue()
+    fringe.enqueue([(start_node, 0)])
     explored_set = set()
 
-    while not queue.is_empty():
-        path = queue.dequeue()
+    while not fringe.is_empty():
+        path = fringe.dequeue()
         node, cost = path[-1]
 
         if node == goal_node:
@@ -23,20 +23,21 @@ def BFS(graph, start_node, goal_node):
         for neighbor, edge_cost in graph.graph[node]:
             if neighbor not in explored_set:
                 new_path = path + [(neighbor, cost + edge_cost)]
-                queue.enqueue(new_path)
+                fringe.enqueue(new_path)
 
     return None
+
 
 def DFS(graph, start_node, goal_node):
     if start_node not in graph.graph or goal_node not in graph.graph:
         return None
 
-    stack = Stack()
-    stack.push([(start_node, 0)])
+    fringe = Stack()
+    fringe.push([(start_node, 0)])
     explored_set = set()
 
-    while not stack.is_empty():
-        path = stack.pop()
+    while not fringe.is_empty():
+        path = fringe.pop()
         node, cost = path[-1]
 
         if node == goal_node:
@@ -47,20 +48,21 @@ def DFS(graph, start_node, goal_node):
         for neighbor, edge_cost in graph.graph[node]:
             if neighbor not in explored_set:
                 new_path = path + [(neighbor, cost + edge_cost)]
-                stack.push(new_path)
+                fringe.push(new_path)
 
     return None
+
 
 def UCS(graph, start_node, goal_node):
     if start_node not in graph.graph or goal_node not in graph.graph:
         return None
 
-    priority_queue = PriorityQueue()
-    priority_queue.push([(start_node, 0)], 0)
+    fringe = PriorityQueue()
+    fringe.push([(start_node, 0)], 0)
     explored_set = set()
 
-    while not priority_queue.is_empty():
-        path = priority_queue.pop()
+    while not fringe.is_empty():
+        path = fringe.pop()
         node, cost = path[-1]
 
         if node == goal_node:
@@ -71,9 +73,10 @@ def UCS(graph, start_node, goal_node):
         for neighbor, edge_cost in graph.graph[node]:
             if neighbor not in explored_set:
                 new_path = path + [(neighbor, cost + edge_cost)]
-                priority_queue.push(new_path, cost + edge_cost)
+                fringe.push(new_path, cost + edge_cost)
 
     return None
+
 
 
 def main():
@@ -100,20 +103,9 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            num_nodes = int(input("Enter the number of nodes: "))
-            for _ in range(num_nodes):
-                node_value = input("Enter the input value to store in the new node: ")
-                graph.graph[node_value] = set()
-                print("Node with value {} added successfully!".format(node_value))
-
-            num_edges = int(input("Enter the number of edges: "))
-            for _ in range(num_edges):
-                source = input("Enter the source node: ")
-                destination = input("Enter the destination node: ")
-                cost = int(input("Enter the cost of the edge (enter 0 if not applicable): "))
-                graph.graph[source].add((destination, cost))
-                graph.graph[destination].add((source, cost))
-                print("Edge between {} and {} added successfully!".format(source, destination))
+             # Initialize a custom graph
+            print("Initializing a custom graph...")
+            graph.init_base_graph()
             print("Custom Graph initialized successfully!")
 
         elif choice == "2":
