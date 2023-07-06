@@ -1,6 +1,3 @@
-import networkx as nx
-import matplotlib.pyplot as plt
-
 class Graph:
     def __init__(self):
         self.graph = {}
@@ -44,18 +41,6 @@ class Graph:
             for adjacent_node, cost in adjacent_nodes:
                 print(f"{adjacent_node}({cost}) ", end="")
             print()
-
-    def print_graph_visually(self):
-        G = nx.Graph()
-        for node, adjacent_nodes in self.graph.items():
-            for adjacent_node, cost in adjacent_nodes:
-                G.add_edge(node, adjacent_node, weight=cost)
-        pos = nx.spring_layout(G)
-        nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10, font_weight='bold',
-                edge_color='gray')
-        labels = nx.get_edge_attributes(G, 'weight')
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
-        plt.show()
 
     def print_adjacency_list(self, node):
         if node in self.graph:

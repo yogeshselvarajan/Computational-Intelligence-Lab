@@ -92,7 +92,7 @@ def main():
         print("3. Add Extra Edges")
         print("4. Delete Node")
         print("5. Delete Edge")
-        print("6. Print the Whole Graph Visually")
+        print("6. Print the Whole Graph's Adjacency List")
         print("7. Print the Adjacency of a Particular Node")
         print("8. Breadth First Search")
         print("9. Depth First Search")
@@ -133,7 +133,7 @@ def main():
             print("Edge between {} and {} deleted successfully!".format(source, destination))
 
         elif choice == "6":
-            graph.print_graph_visually()
+            graph.print_graph()
 
         elif choice == "7":
             node_value = input("Enter the node value to print adjacency: ")
