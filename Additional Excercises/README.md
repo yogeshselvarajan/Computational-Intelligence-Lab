@@ -22,5 +22,5 @@ The Network Routing exercise implements the UCS (Uniform Cost Search) algorithm 
 
 ## Credits
 
-The Maze Solver and Network Routing exercises were implemented by [Your Name]. Feel free to contribute and improve the code.
+These excercises were developed by [Yogesh S](https://github.com/yogeshselvarajan). Feel free to contribute and improve the code.
 

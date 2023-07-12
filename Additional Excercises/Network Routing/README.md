@@ -26,14 +26,21 @@ The `Graph` class represents the network graph and provides functions to manipul
 
 ### Screenshots
 
-![Sample Input Network Graph](img/input_graph.png)
-*Example screenshot of the input network graph.*
 
-![Network Routing Topology](img/network_routing_topology.png)
-*Example screenshot of the network topology.*
+*Input Network Graph Taken*
 
-![UCS Path](img/ucs_path.png)
-*Example screenshot of the minimum latency delivery path found using UCS.*
+![Sample Input Network Graph](https://github.com/yogeshselvarajan/Computational-Intelligence-Lab/blob/f23c369c7f23584a2fba4590c315a2938b58f65f/img/input_graph.png)
+
+
+*Input Network Graph Taken*
+
+![Network Routing Topology](https://github.com/yogeshselvarajan/Computational-Intelligence-Lab/blob/master/img/network_routing_topology.png)
+
+
+*Minimum Latency Path Found*
+
+![UCS Path](https://github.com/yogeshselvarajan/Computational-Intelligence-Lab/blob/master/img/ucs_path.png)
+
 
 ## Usage
 

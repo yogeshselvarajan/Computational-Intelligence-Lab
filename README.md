@@ -21,7 +21,9 @@ To get started with the exercise, follow these steps:
 3. Compile and run the program by the local README file command at the local folder.
 
 ### Additional Exercises
-This repository will include solutions for various exercises related to Computational Intelligence. Stay tuned for more updates!
+This repository also has additional exercises that are not part of the lab curriculum. These exercises are:
+   - Maze Solver using DFS and BFS algorithms 
+   - Network Routing using UCS algorithm
 
 ### Contributors
 

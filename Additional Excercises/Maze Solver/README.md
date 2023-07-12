@@ -38,11 +38,15 @@ The turtle module is used to visualize the maze solving process. The following t
 
 ## Screenshots
 
-![Maze Solver BFS](img/maze_solver_bfs.png)
-*Example screenshot of the Maze Solver using BFS algorithm.*
+*Example screenshot of the Maze Solver using BFS algorithm.*]
 
-![Maze Solver DFS](img/maze_solver_dfs.png)
+![Maze Solver BFS](https://github.com/yogeshselvarajan/Computational-Intelligence-Lab/blob/f23c369c7f23584a2fba4590c315a2938b58f65f/img/maze_solver_bfs.png)
+
+
 *Example screenshot of the Maze Solver using DFS algorithm.*
+
+![Maze Solver DFS](https://github.com/yogeshselvarajan/Computational-Intelligence-Lab/blob/f23c369c7f23584a2fba4590c315a2938b58f65f/img/maze_solver_dfs.png)
+
 
 ## Usage
 
