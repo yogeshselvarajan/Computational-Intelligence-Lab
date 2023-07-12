@@ -1,0 +1,592 @@
+Script started on Fri 07 Jul 2023 01:02:26 PM IST
+
+
+	***************************
+	****	  SRC CODES    ****
+	***************************
+[20bcs178@mepcolinux ex1]$cat QueueImplementation.py 
+
+class Queue:
+
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, item):
+        self.items.append(item)
+
+    def dequeue(self):
+        return self.items.pop(0)
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def __len__(self):
+        return len(self.items)
+
+[20bcs178@mepcolinux ex1]$cat StackImplementation.py 
+
+class Stack:
+
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        return self.items.pop()
+
+    def peek(self):
+        return self.items[-1]
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def __len__(self):
+        return len(self.items)[20bcs178@mepcolinux ex1]$cat PriorityQueueImplementation.py 
+class PriorityQueue:
+
+    def __init__(self):
+        self.items = []
+
+    def push(self, item, priority):
+        self.items.append((priority, item))
+        self.items.sort(reverse=True)
+
+    def pop(self):
+        return self.items.pop()[1]
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+[20bcs178@mepcolinux ex1]$cat GraphImplementation.py 
+
+class Graph:
+    def __init__(self):
+        self.graph = {}
+
+    def init_base_graph(self):
+        num_nodes = int(input("\nEnter the total number of nodes for the input graph: "))
+        for i in range(num_nodes):
+            while True:
+                node_value = input("\nEnter the value of node {}: ".format(i + 1))
+                if node_value not in self.graph:
+                    self.graph[node_value] = set()
+                    break
+                else:
+                    print("Node already exists in the graph. Please enter a different node value.")
+
+        num_edges = int(input("\n\nEnter the total number of edges for the input graph: "))
+        for i in range(num_edges):
+            while True:
+                edge_input = input("\nEnter the source, destination, and cost of edge {} (separated by space): ".format(i + 1))
+                edge_parts = edge_input.split()
+                if len(edge_parts) != 3:
+                    print("Invalid input. Please provide source, destination, and cost separated by space.")
+                    continue
+                source, destination, cost = edge_parts
+                if source in self.graph and destination in self.graph:
+                    try:
+                        cost = int(cost)
+                        self.graph[source].add((destination, cost))
+                        self.graph[destination].add((source, cost))
+                        break
+                    except ValueError:
+                        print("Cost should be a numeric value. Please enter a valid cost.")
+                else:
+                    print("Source or destination node does not exist in the graph. Please enter valid nodes.")
+
+
+    def print_graph(self):
+        print("The whole graph is:")
+        for node, adjacent_nodes in self.graph.items():
+            print(f"{node}: ", end="")
+            for adjacent_node, cost in adjacent_nodes:
+                print(f"{adjacent_node}({cost}) ", end="")
+            print()
+
+    def print_adjacency_list(self, node):
+        if node in self.graph:
+            print("\n\nThe adjacency list of node {} is: {}".format(node, self.graph[node]))
+        else:
+            print("Node does not exist in the graph.")
+
+    def delete_edge(self, source, destination):
+        if source in self.graph and destination in self.graph:
+            self.graph[source] = {(adjacent_node, cost) for adjacent_node, cost in self.graph[source] if adjacent_node != destination}
+            self.graph[destination] = {(adjacent_node, cost) for adjacent_node, cost in self.graph[destination] if adjacent_node != source}
+            print("Edge between {} and {} deleted.".format(source, destination))
+        else:
+            print("Source or destination node does not exist in the graph. Please enter valid nodes.")
+
+    def delete_node(self, node_value):
+        if node_value in self.graph:
+            del self.graph[node_value]
+            for node in self.graph:
+                self.graph[node] = {(n, c) for n, c in self.graph[node] if n != node_value}
+
+[20bcs178@mepcolinux ex1]$cat UninformedSearch.py 
+
+from QueueImplementation import Queue
+from StackImplementation import Stack
+from PriorityQueueImplementation import PriorityQueue
+from GraphImplementation import Graph
+
+def BFS(graph, start_node, goal_node):
+    if start_node not in graph.graph or goal_node not in graph.graph:
+        return None
+
+    fringe = Queue()
+    fringe.enqueue([(start_node, 0)])
+    explored_set = set()
+
+    while not fringe.is_empty():
+        path = fringe.dequeue()
+        node, cost = path[-1]
+
+        if node == goal_node:
+            return [node for node, _ in path], cost
+
+        explored_set.add(node)
+
+        for neighbor, edge_cost in graph.graph[node]:
+            if neighbor not in explored_set:
+                new_path = path + [(neighbor, cost + edge_cost)]
+                fringe.enqueue(new_path)
+
+    return None
+
+
+def DFS(graph, start_node, goal_node):
+    if start_node not in graph.graph or goal_node not in graph.graph:
+        return None
+
+    fringe = Stack()
+    fringe.push([(start_node, 0)])
+    explored_set = set()
+
+    while not fringe.is_empty():
+        path = fringe.pop()
+        node, cost = path[-1]
+
+        if node == goal_node:
+            return [node for node, _ in path], cost
+
+        explored_set.add(node)
+
+        for neighbor, edge_cost in graph.graph[node]:
+            if neighbor not in explored_set:
+                new_path = path + [(neighbor, cost + edge_cost)]
+                fringe.push(new_path)
+
+    return None
+
+
+def UCS(graph, start_node, goal_node):
+    if start_node not in graph.graph or goal_node not in graph.graph:
+        return None
+
+    fringe = PriorityQueue()
+    fringe.push([(start_node, 0)], 0)
+    explored_set = set()
+
+    while not fringe.is_empty():
+        path = fringe.pop()
+        node, cost = path[-1]
+
+        if node == goal_node:
+            return [node for node, _ in path], cost
+
+        explored_set.add(node)
+
+        for neighbor, edge_cost in graph.graph[node]:
+            if neighbor not in explored_set:
+                new_path = path + [(neighbor, cost + edge_cost)]
+                fringe.push(new_path, cost + edge_cost)
+
+    return None
+
+def main():
+    print("\t\tWelcome to the Computational Intelligence Laboratory Exercise 1 - Uninformed Search (Blind Search Implementation)")
+    graph = Graph()
+
+    while True:
+        print("--------------------------------")
+        print("\t MAIN MENU")
+        print("--------------------------------")
+        print("1. Initialize Custom Graph")
+        print("2. Add Extra Node")
+        print("3. Add Extra Edges")
+        print("4. Delete Node")
+        print("5. Delete Edge")
+        print("6. Print the Whole Graph's Adjacency List")
+        print("7. Print the Adjacency of a Particular Node")
+        print("8. Breadth First Search")
+        print("9. Depth First Search")
+        print("10. Uniform Cost Search")
+        print("11. Exit")
+        print("--------------------------------")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+             # Initialize a custom graph
+            print("Initializing a custom graph...")
+            graph.init_base_graph()
+            print("Custom Graph initialized successfully!")
+
+        elif choice == "2":
+            node_value = input("Enter the input value to store in the new node: ")
+            graph.graph[node_value] = set()
+            print("Node with value {} added successfully!".format(node_value))
+
+        elif choice == "3":
+            source = input("Enter the source node: ")
+            destination = input("Enter the destination node: ")
+            cost = int(input("Enter the cost of the edge (enter 0 if not applicable): "))
+            graph.graph[source].add((destination, cost))
+            graph.graph[destination].add((source, cost))
+            print("Edge between {} and {} added successfully!".format(source, destination))
+
+        elif choice == "4":
+            node_value = input("Enter the node value to delete: ")
+            graph.delete_node(node_value)
+            print("Node with value {} deleted successfully!".format(node_value))
+
+        elif choice == "5":
+            source = input("Enter the source node: ")
+            destination = input("Enter the destination node: ")
+            graph.delete_edge(source, destination)
+            print("Edge between {} and {} deleted successfully!".format(source, destination))
+
+        elif choice == "6":
+            graph.print_graph()
+
+        elif choice == "7":
+            node_value = input("Enter the node value to print adjacency: ")
+            graph.print_adjacency_list(node_value)
+
+        elif choice == "8":
+            start_node = input("Enter the start node: ")
+            goal_node = input("Enter the goal node: ")
+            result = BFS(graph, start_node, goal_node)
+            if result:
+                path, cost = result
+                print("Breadth First Search Path:", path)
+                print("Breadth First Search Cost:", cost)
+            else:
+                print("Goal node cannot be reached from the start node.")
+
+        elif choice == "9":
+            start_node = input("Enter the start node: ")
+            goal_node = input("Enter the goal node: ")
+            result = DFS(graph, start_node, goal_node)
+            if result:
+                path, cost = result
+                print("Depth First Search Path:", path)
+                print("Depth First Search Cost:", cost)
+            else:
+                print("Goal node cannot be reached from the start node.")
+
+        elif choice == "10":
+            start_node = input("Enter the start node: ")
+            goal_node = input("Enter the goal node: ")
+            result = UCS(graph, start_node, goal_node)
+            if result:
+                cost, path = result
+                print("Uniform Cost Search Cost:", cost)
+                print("Uniform Cost Search Path:", path)
+            else:
+                print("Goal node cannot be reached from the start node.")
+
+        elif choice == "11":
+            print("Exiting the program...")
+            break
+
+        else:
+            print("Invalid option. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
+
+	***************************
+	****	  OUTPUT       ****
+	***************************
+[20bcs178@mepcolinux ex1]$python3 UninformedSearch.py 
+		
+	Welcome to the Computational Intelligence Laboratory Exercise 1 - Uninformed Search (Blind Search Implementation)
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 1
+Initializing a custom graph...
+
+Enter the total number of nodes for the input graph: 9
+
+Enter the value of node 1: S
+
+Enter the value of node 2: A
+
+Enter the value of node 3: B
+
+Enter the value of node 4: C
+
+Enter the value of node 5: D
+
+Enter the value of node 6: E
+
+Enter the value of node 7: F
+
+Enter the value of node 8: G
+
+Enter the value of node 9: H
+
+
+Enter the total number of edges for the input graph: 10
+
+Enter the source, destination, and cost of edge 1 (separated by space): A S 5
+
+Enter the source, destination, and cost of edge 2 (separated by space): S B 2
+
+Enter the source, destination, and cost of edge 3 (separated by space): S C 4
+
+Enter the source, destination, and cost of edge 4 (separated by space): A D 9
+
+Enter the source, destination, and cost of edge 5 (separated by space): A E 4
+
+Enter the source, destination, and cost of edge 6 (separated by space): E G 6
+
+Enter the source, destination, and cost of edge 7 (separated by space): B G 6
+
+Enter the source, destination, and cost of edge 8 (separated by space): F G 1
+
+Enter the source, destination, and cost of edge 9 (separated by space): C F 2
+
+Enter the source, destination, and cost of edge 10 (separated by space): D H 7
+Custom Graph initialized successfully!
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 2
+Enter the input value to store in the new node: Z
+Node with value Z added successfully!
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 3
+Enter the source node: H
+Enter the destination node: Z
+Enter the cost of the edge (enter 0 if not applicable): 10
+Edge between H and Z added successfully!
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 6
+The whole graph is:
+S: B(2) C(4) A(5) 
+A: S(5) E(4) D(9) 
+B: S(2) G(6) 
+C: F(2) S(4) 
+D: H(7) A(9) 
+E: A(4) G(6) 
+F: G(1) C(2) 
+G: E(6) F(1) B(6) 
+H: Z(10) D(7) 
+Z: H(10) 
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 7
+Enter the node value to print adjacency: A
+
+
+The adjacency list of node A is: {('S', 5), ('E', 4), ('D', 9)}
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 5
+Enter the source node: Z
+Enter the destination node: H
+Edge between Z and H deleted.
+Edge between Z and H deleted successfully!
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 6
+The whole graph is:
+S: B(2) C(4) A(5) 
+A: S(5) E(4) D(9) 
+B: S(2) G(6) 
+C: F(2) S(4) 
+D: H(7) A(9) 
+E: A(4) G(6) 
+F: G(1) C(2) 
+G: E(6) F(1) B(6) 
+H: D(7) 
+Z: 
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 8
+Enter the start node: S
+Enter the goal node: G
+Breadth First Search Path: ['S', 'B', 'G']
+Breadth First Search Cost: 8
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 9
+Enter the start node: S
+Enter the goal node: G
+Depth First Search Path: ['S', 'A', 'E', 'G']
+Depth First Search Cost: 15
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 10
+Enter the start node: S
+Enter the goal node: G
+Uniform Cost Search Cost: ['S', 'C', 'F', 'G']
+Uniform Cost Search Path: 7
+--------------------------------
+	 MAIN MENU
+--------------------------------
+1. Initialize Custom Graph
+2. Add Extra Node
+3. Add Extra Edges
+4. Delete Node
+5. Delete Edge
+6. Print the Whole Graph's Adjacency List
+7. Print the Adjacency of a Particular Node
+8. Breadth First Search
+9. Depth First Search
+10. Uniform Cost Search
+11. Exit
+--------------------------------
+Enter your choice: 11
+Exiting the program...
+[20bcs178@mepcolinux ex1]$exit
+exit
+
+Script done on Fri 07 Jul 2023 01:06:02 PM IST

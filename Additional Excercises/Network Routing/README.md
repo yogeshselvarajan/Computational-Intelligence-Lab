@@ -24,6 +24,17 @@ The `Graph` class represents the network graph and provides functions to manipul
 - `print_possible_neighbours(node)`: Print the nodes that can be reached from a given connection point.
 - `ucs(start, goal)`: Perform Uniform Cost Search to find the minimum latency delivery path.
 
+### Screenshots
+
+![Sample Input Network Graph](img/input_graph.png)
+*Example screenshot of the input network graph.*
+
+![Network Routing Topology](img/network_routing_topology.png)
+*Example screenshot of the network topology.*
+
+![UCS Path](img/ucs_path.png)
+*Example screenshot of the minimum latency delivery path found using UCS.*
+
 ## Usage
 
 To run the program:

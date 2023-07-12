@@ -36,6 +36,14 @@ The turtle module is used to visualize the maze solving process. The following t
 4. The visited cells are visualized using the green turtle, and the frontier cells are visualized using the blue turtle.
 5. Once the end position is reached, the solution path is backtracked using the solution dictionary and visualized using the yellow turtle.
 
+## Screenshots
+
+![Maze Solver BFS](img/maze_solver_bfs.png)
+*Example screenshot of the Maze Solver using BFS algorithm.*
+
+![Maze Solver DFS](img/maze_solver_dfs.png)
+*Example screenshot of the Maze Solver using DFS algorithm.*
+
 ## Usage
 
 To run the program:
