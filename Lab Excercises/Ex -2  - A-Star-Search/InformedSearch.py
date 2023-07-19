@@ -1,159 +1,136 @@
-from SetImplementation import ExploredSet
-from PriorityQueueImplementation import PriorityQueue
-from GraphImplementation import Graph
-import pandas as pd
+from GraphImplementation import DirectedGraph as Graph
+from SetImplementation import Set
 
-
-class NodeWithPriority:
-    def __init__(self, data, priority):
-        self.data = data
-        self.priority = priority
-
-
-def a_star(graph, start_node, end_node):
-    if start_node == end_node:
-        print("Start node and end node are the same.")
+def aStarAlgo(start_node, stop_node, graph):
+    if start_node not in graph.nodes:
+        print("Start node {} is not present in the graph!".format(start_node))
+        return
+    if stop_node not in graph.nodes:
+        print("Stop node {} is not present in the graph!".format(stop_node))
         return
 
-    if start_node not in graph.graph:
-        print("Start node does not exist in the graph. Please enter a valid start node.")
-        return
+    open_set = Set()
+    open_set.add(start_node)
+    closed_set = Set()
+    g = {start_node: 0}
+    parents = {start_node: start_node}
+    paths = {start_node: [start_node]}
+    cost = {start_node: 0}
 
-    if end_node not in graph.graph:
-        print("End node does not exist in the graph. Please enter a valid end node.")
-        return
-
-    # Create a Priority Queue for open list
-    open_list = PriorityQueue()
-
-    # Create a set to store explored nodes
-    explored_set = set()
-
-    # Create dictionaries for g(n), h(n), and f(n) values
-    g_values = {node: float('inf') for node in graph.graph}
-    h_values = {node: graph.get_heuristic(node) for node in graph.graph}
-    f_values = {node: float('inf') for node in graph.graph}
-
-    # Create dictionaries for storing the parent nodes and the similarity values of the shortest path
-    parent_nodes = {node: None for node in graph.graph}
-    similarity_values = {node: None for node in graph.graph}
-
-    # Initialize the start node
-    g_values[start_node] = 0
-    f_values[start_node] = g_values[start_node] + h_values[start_node]
-    open_list.enqueue(NodeWithPriority(start_node, f_values[start_node]))
-
-    while not open_list.is_empty():
-        current_node = open_list.dequeue().data
-
-        if current_node == end_node:
-            # Path found, print the path and total cost
-            path = []
-            total_cost = g_values[current_node]
-
-            while current_node is not None:
-                path.append(current_node)
-                current_node = parent_nodes[current_node]
-
-            path.reverse()
-            print("Path:", " -> ".join(path))
-            print("Total Cost:", total_cost)
-
-            return
-
-        if current_node in explored_set:
-            continue
-
-        explored_set.add(current_node)
-
-        for neighbor, similarity in graph.graph[current_node].items():
-            if neighbor in explored_set:
-                continue
-
-            # Calculate g(n) for the neighbor node
-            g_score = g_values[current_node] + similarity
-
-            if g_score < g_values[neighbor]:
-                g_values[neighbor] = g_score
-                f_values[neighbor] = g_values[neighbor] + h_values[neighbor]
-                open_list.enqueue(NodeWithPriority(neighbor, f_values[neighbor]))
-
-                # Update parent and similarity values for the neighbor node
-                parent_nodes[neighbor] = current_node
-                similarity_values[neighbor] = similarity
-
-    print("Path not found.")
-
-
-def main():
-    base_graph = None
-
-    while True:
-        print("\n----- Menu -----")
-        print("1. Input base graph")
-        print("2. Add Extra Nucleotide Node")
-        print("3. Add Extra Similarity Edge")
-        print("4. Print the whole DNA Sequence Graph")
-        print("5. Find Shortest Path (A* Algorithm)")
-        print("6. Exit")
-
-        choice = input("Enter your choice (1-5): ")
-
-        if choice == '1':
-            base_graph = Graph.initialise_base_graph()
-            if base_graph:
-                print("Base graph initialized successfully!")
-
-        elif choice == '2':
-            if base_graph:
-                while True:
-                    try:
-                        nucleotide, heuristic = input("Enter nucleotide and its heuristic value (separated by space): ").split()
-                        heuristic = float(heuristic)
-                        base_graph.add_node(nucleotide, heuristic)
-                        break
-                    except ValueError:
-                        print("Invalid input. Please enter a valid nucleotide and its heuristic value.")
-
-            else:
-                print("Please input the base graph first.")
-
-        elif choice == '3':
-            if base_graph:
-                while True:
-                    try:
-                        src, dest, similarity = input("Enter source, destination, and similarity (separated by space): ").split()
-                        similarity = float(similarity)
-                        base_graph.add_edge(src, dest, similarity)
-                        break
-                    except ValueError:
-                        print("Invalid input. Please enter a valid source, destination, and similarity.")
-
-            else:
-                print("Please input the base graph first.")
-
-        elif choice == '4':
-            if base_graph:
-                base_graph.print_adjacency_list()
-            else:
-                print("Please input the base graph first.")
-
-        elif choice == '5':
-            if base_graph:
-                start_nucleotide = input("Enter the start nucleotide: ")
-                end_nucleotide = input("Enter the end nucleotide: ")
-
-                a_star(base_graph, start_nucleotide, end_nucleotide)
-
-            else:
-                print("Please input the base graph first.")
-
-        elif choice == '6':
-            print("Exiting the program...")
+    while len(open_set) > 0:
+        n = None
+        for v in open_set.items:
+            if n is None or g[v] + graph.nodes[v] < g[n] + graph.nodes[n]:
+                n = v
+        if n == stop_node or graph.nodes[n] is None:
             break
 
+        for m, weight in graph.get_neighbors(n):
+            if not open_set.contains(m) and not closed_set.contains(m):
+                open_set.add(m)
+                parents[m] = n
+                g[m] = g[n] + weight
+                paths[m] = paths[n] + [m]
+                cost[m] = g[m] + graph.nodes[m]
+            else:
+                if g[m] > g[n] + weight:
+                    g[m] = g[n] + weight
+                    parents[m] = n
+                    paths[m] = paths[n] + [m]
+                    cost[m] = g[m] + graph.nodes[m]
+                    if closed_set.contains(m):
+                        closed_set.remove(m)
+                        open_set.add(m)
+
+        open_set.remove(n)
+        closed_set.add(n)
+
+    optimal_path = ' -> '.join(paths[n])
+    optimal_cost = cost[n]
+    print("\tOptimal Path:", optimal_path)
+    print("\tOptimal Cost:", optimal_cost)
+    return optimal_path
+
+def traverseGraph(start_node, end_node, current_path, current_cost, graph):
+    if start_node == end_node:
+        path_str = ' -> '.join(current_path)
+        print("\tPath:", path_str, "(Cost:", current_cost, ")")
+        return
+
+    neighbors = graph.get_neighbors(start_node)
+    if neighbors is not None:
+        for neighbor, weight in neighbors:
+            if neighbor not in current_path:
+                traverseGraph(
+                    neighbor,
+                    end_node,
+                    current_path + [neighbor],
+                    current_cost + weight,
+                    graph
+                )
+
+def main():
+    print("\t\tWelcome to the CI Lab Ex 2 - Informed Search Techniques")
+    graph = Graph()
+    test_graph_created = False
+    
+    while True:
+        print("--------------------------------")
+        print("\tMAIN MENU")
+        print("--------------------------------")
+        print("1. Create Test Graph")
+        print("2. Input a Directed Graph")
+        print("3. Add New Node")
+        print("4. Add New Edge")
+        print("5. Print Directed Graph Info")
+        print("6. Get Neighbors of a Node")
+        print("7. A* Algorithm")
+        print("8. Exit")
+        
+        choice = input("Enter your choice (1-8): ")
+        print()
+
+        if choice == "1":
+            if test_graph_created:
+                print("Test graph already created.")
+            else:
+                graph.test_input_graph()
+                test_graph_created = True
+        elif choice == "2":
+            graph.initialize()
+        elif choice == "3":
+            dna_seq = input("Enter the DNA sequence to add to the graph: ")
+            heuristic = int(input("Enter the heuristic value for the DNA sequence: "))
+            graph.add_node(dna_seq, heuristic)
+        elif choice == "4":
+            src_node = input("Enter the source DNA sequence to add the edge from: ")
+            dest_node = input("Enter the destination DNA sequence to add the edge to: ")
+            similarity = int(input("Enter the similarity value between {} and {} to add: ".format(src_node, dest_node)))
+            graph.add_edge(src_node, dest_node, similarity)
+        elif choice == "5":
+            graph.print_graph()
+        elif choice == "6":
+            node = input("Enter the DNA sequence to get the neighbors of: ")
+            neighbors = graph.get_neighbors(node)
+            if neighbors is not None:
+                print("Neighbors of node {} are:".format(node))
+                for neighbor, weight in neighbors:
+                    print("Neighbor: {}, Similarity: {}".format(neighbor, weight))
+            else:
+                print("Node {} does not exist in the graph.".format(node))
+        elif choice == "7":
+            start_node = input("Enter the start DNA sequence: ")
+            stop_node = input("Enter the goal DNA sequence: ")
+            print("\nAll Possible Paths to reach {} from {} are:".format(stop_node, start_node))
+            traverseGraph(start_node, stop_node, [start_node], 0, graph)
+
+            print("\nThe optimal path through the A* algorithm is:")
+            aStarAlgo(start_node, stop_node, graph)
+        elif choice == "8":
+            print("Exiting the program...")
+            break
         else:
-            print("Invalid choice. Please enter a valid option (1-5).")
+            print("Invalid choice. Please try again.")
 
 
 if __name__ == "__main__":

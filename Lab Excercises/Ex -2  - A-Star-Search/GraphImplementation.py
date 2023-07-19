@@ -1,192 +1,92 @@
-import pandas as pd 
+import pandas as pd
 
-class Graph:
+class DirectedGraph:
     def __init__(self):
-        self.graph = {}
-        self.heuristics = {}
+        self.nodes = {}
+        self.edges = {}
 
-    @staticmethod
-    def initialise_base_graph():
-        g = Graph()
+    def initialize(self):
+        num_nodes = int(input("Enter the total number of DNA sequences in the graph: "))
+        num_edges = int(input("Enter the total number of similarity connections in the graph: "))
+        print()
 
-        # Get the total number of nucleotide sequences
-        total_sequences = int(input("Enter the total number of nucleotide sequences: "))
+        for i in range(num_nodes):
+            try:
+                sequence, heuristic = input("Enter DNA sequence {} and its heuristic value: ".format(i + 1)).split()
+                self.add_node(sequence, int(heuristic))
+            except ValueError:
+                print("Invalid input! Please enter both the DNA sequence and its heuristic value.")
+                
 
-        # Get nucleotide sequences and their heuristic values
-        for i in range(total_sequences):
-            while True:
-                try:
-                    nucleotide_seq, heuristic = input("Enter nucleotide {0} and its heuristic value (separated by space): ".format(i+1)).split()
-                    heuristic = float(heuristic)
+        print()
 
-                    # Check if nucleotide sequence is valid
-                    valid = True
-                    if not all(nucleotide in ['A', 'T', 'C', 'G'] for nucleotide in nucleotide_seq):
-                     print("Invalid nucleotide sequence. Please enter a sequence using only A, T, C, or G.")
-                     valid = False
-                    elif 'A' in nucleotide_seq and 'T' not in nucleotide_seq:
-                         print("Invalid nucleotide sequence. A must be paired with T.")
-                         valid = False
-                    elif 'T' in nucleotide_seq and 'A' not in nucleotide_seq:
-                         print("Invalid nucleotide sequence. T must be paired with A.")
-                         valid = False
-                    elif 'C' in nucleotide_seq and 'G' not in nucleotide_seq:
-                         print("Invalid nucleotide sequence. C must be paired with G.")
-                         valid = False
-                    elif 'G' in nucleotide_seq and 'C' not in nucleotide_seq:
-                         print("Invalid nucleotide sequence. G must be paired with C.")
-                         valid = False
+        for i in range(num_edges):
+            try:
+                src, dest, similarity = input("Similarity connection {} - Enter source, destination, and similarity info: ".format(i + 1)).split()
+                self.add_edge(src, dest, int(similarity))
+            except ValueError:
+                print("Invalid input. Please enter the source, destination, and similarity value.")
 
-                    if valid:
-                     # Add nucleotide sequence and heuristic to the graph
-                        g.add_node(nucleotide_seq, heuristic)
-                        break
+    def add_node(self, sequence, heuristic):
+        self.nodes[sequence] = heuristic
+        print("DNA sequence {} added with heuristic value {}".format(sequence, heuristic))
 
-                except ValueError:
-                    print("Invalid input. Please enter a valid nucleotide and its heuristic value.")
-
-        # Get the number of similarity edges
-        total_edges = int(input("Enter the number of similarity edges: "))
-
-        # Get similarity edges
-        for i in range(total_edges):
-            while True:
-                try:
-                    src, dest, similarity = input("Edge {0}: Enter source, destination, and similarity (separated by space): ".format(i+1)).split()
-                    similarity = float(similarity)
-
-                    # Check if similarity is valid
-                    if not (0 <= similarity <= 1):
-                        print("Similarity should be between 0 and 1.")
-                    else:
-                        # Add similarity edge to the graph
-                        g.add_edge(src, dest, similarity)
-                    break
-
-                except ValueError:
-                    print("Invalid input. Please enter a valid source, destination, and similarity.")
-
-        return g
-
-    def add_node(self, nucleotide, heuristic):
-        if nucleotide in self.graph:
-            print("Nucleotide already exists in the graph.")
+    def add_edge(self, src, dest, similarity):
+        if src in self.nodes and dest in self.nodes:
+            if src not in self.edges:
+                self.edges[src] = []
+            self.edges[src].append((dest, similarity))
+            print("Similarity connection added from {} to {} with similarity {}".format(src, dest, similarity))
         else:
-            self.graph[nucleotide] = {}
-            self.heuristics[nucleotide] = heuristic
+            print("Both source and destination nodes must exist in the graph.")
 
-    def add_edge(self, source, destination, similarity):
-        if source not in self.graph:
-            print("Source nucleotide does not exist in the graph. Please enter a valid nucleotide.")
-            return
-        if destination not in self.graph:
-            print("Destination nucleotide does not exist in the graph. Please enter a valid nucleotide.")
-            return
+    def print_graph(self):
+        data = {'Source Sequence': [], 'H(Parent)': [], 'Destination Sequences': []}
 
-        try:
-            similarity = float(similarity)
-            if 0 <= similarity <= 1:
-                self.graph[source][destination] = similarity
-                self.graph[destination][source] = similarity
+        for source, heuristic in self.nodes.items():
+            if source in self.edges:
+                destinations = self.edges[source]
+                dest_str = ', '.join(f'{dest} ({similarity})' for dest, similarity in destinations)
             else:
-                print("Similarity value should be between 0 and 1. Please enter a valid similarity.")
-        except ValueError:
-            print("Similarity should be a numeric value. Please enter a valid similarity.")
+                dest_str = '-'
 
-    def get_heuristic(self, nucleotide):
-        if nucleotide in self.heuristics:
-            return self.heuristics[nucleotide]
-        else:
-            print("Nucleotide not found in the graph.")
-            return None
-
-    def get_similarity(self, source, destination):
-        if source in self.graph and destination in self.graph[source]:
-            return self.graph[source][destination]
-        else:
-            print("Edge not found in the graph.")
-            return None
-
-    
-
-    def print_adjacency_list(self):
-        data = {
-            'Parent Nucleotide': [],
-            "Node's Heuristic Value": [],
-            'Child Nodes': [],
-            'Similarity Measure': []
-        }
-
-        for nucleotide, neighbors in self.graph.items():
-            data['Parent Nucleotide'].append(nucleotide)
-            data["Node's Heuristic Value"].append(self.get_heuristic(nucleotide))
-            data['Child Nodes'].append(', '.join(neighbors.keys()))
-            data['Similarity Measure'].append(', '.join(str(similarity) for similarity in neighbors.values()))
+            data['Source Sequence'].append(source)
+            data['H(Parent)'].append(heuristic)
+            data['Destination Sequences'].append(dest_str)
 
         df = pd.DataFrame(data)
-        df.index += 1
+        df.index = range(1, len(df) + 1)
+        print("\nThe DNA Sequence Similarity Graph Setup is as follows:\n")
         print(df)
 
-
-def main():
-    base_graph = None
-
-    while True:
-        print("\n----- Menu -----")
-        print("1. Input base graph")
-        print("2. Add Extra Nucleotide Node")
-        print("3. Add Extra Similarity Edge")
-        print("4. Print the whole DNA Sequence Graph")
-        print("5. Exit")
-
-        choice = input("Enter your choice (1-5): ")
-
-        if choice == '1':
-            base_graph = Graph.initialise_base_graph()
-            if base_graph:
-                print("Base graph initialized successfully!")
-
-        elif choice == '2':
-            if base_graph:
-                while True:
-                    try:
-                        nucleotide, heuristic = input("Enter nucleotide and its heuristic value (separated by space): ").split()
-                        heuristic = float(heuristic)
-                        base_graph.add_node(nucleotide, heuristic)
-                        break
-                    except ValueError:
-                        print("Invalid input. Please enter a valid nucleotide and its heuristic value.")
-
-            else:
-                print("Please input the base graph first.")
-
-        elif choice == '3':
-            if base_graph:
-                while True:
-                    try:
-                        src, dest, similarity = input("Enter source, destination, and similarity (separated by space): ").split()
-                        similarity = float(similarity)
-                        base_graph.add_edge(src, dest, similarity)
-                        break
-                    except ValueError:
-                        print("Invalid input. Please enter a valid source, destination, and similarity.")
-
-            else:
-                print("Please input the base graph first.")
-
-        elif choice == '4':
-            if base_graph:
-                base_graph.print_adjacency_list()
-            else:
-                print("Please input the base graph first.")
-
-        elif choice == '5':
-            print("Exiting the program...")
-            break
-
+    def get_neighbors(self, sequence):
+        if sequence in self.nodes:
+            return self.edges.get(sequence, [])
         else:
-            print("Invalid choice. Please enter a valid option (1-5).")
+            return None
+        
+    def test_input_graph(self):
+        self.add_node('AGT', 13)
+        self.add_node('TTC', 12)
+        self.add_node('GAC', 10)
+        self.add_node('ACG', 15)
+        self.add_node('TGC', 9)
+        self.add_node('CTG', 6)
+        self.add_node('TAC', 3)
+        self.add_node('AGC', 7)
+        self.add_node('GCT', 7)
+        self.add_node('CTA', 0)
 
-
-if __name__ == "__main__":
-    main()
+        self.add_edge('AGT', 'TTC', 5)
+        self.add_edge('AGT', 'GAC', 2)
+        self.add_edge('AGT', 'ACG', 4)
+        self.add_edge('TTC', 'TGC', 9)
+        self.add_edge('TTC', 'CTG', 4)
+        self.add_edge('GAC', 'TAC', 7)
+        self.add_edge('ACG', 'AGC', 6)
+        self.add_edge('AGC', 'TAC', 6)
+        self.add_edge('CTG', 'TAC', 3)
+        self.add_edge('TGC', 'GCT', 2)
+        self.add_edge('GCT', 'CTG', 1)
+        self.add_edge('TAC', 'CTA', 2)
+        self.add_edge('AGC', 'CTA', 3)
