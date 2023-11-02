@@ -1,5 +1,3 @@
-import pandas as pd
-
 class DirectedGraph:
     def __init__(self):
         self.nodes = {}
@@ -54,10 +52,19 @@ class DirectedGraph:
             data['H(Parent)'].append(heuristic)
             data['Destination Sequences'].append(dest_str)
 
-        df = pd.DataFrame(data)
-        df.index = range(1, len(df) + 1)
+        max_source_length = max(len(source) for source in data['Source Sequence'])
+        max_parent_length = max(len(str(heuristic)) for heuristic in data['H(Parent)'])
+
         print("\nThe DNA Sequence Similarity Graph Setup is as follows:\n")
-        print(df)
+        print(f"{'Source Sequence':<{max_source_length}} | {'H(Parent)':<{max_parent_length}} | Destination Sequences")
+        print(f"{'-' * max_source_length} | {'-' * max_parent_length} | {'-' * 60}")
+
+        for i in range(len(data['Source Sequence'])):
+            source = data['Source Sequence'][i]
+            heuristic = data['H(Parent)'][i]
+            dest_str = data['Destination Sequences'][i]
+            print(f"{source:<{max_source_length}} | {heuristic:<{max_parent_length}} | {dest_str}")
+
 
     def get_neighbors(self, sequence):
         if sequence in self.nodes:

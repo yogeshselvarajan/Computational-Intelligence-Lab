@@ -35,5 +35,5 @@ The following menu options are available:
 To run the program, follow these steps:
 
 1. Clone the repository: `https://github.com/yogeshselvarajan/Computational-Intelligence-Lab.git`
-2. Change directory to the repository: `cd Ex1`
+2. Change directory to the repository: `cd Lab Excercises/DFS BFS UCS`
 3. Compile and run the program: `python3 UninformedSearch.py` 
